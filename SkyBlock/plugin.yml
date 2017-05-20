@@ -1,0 +1,8 @@
+name: SkyBlock
+version: 0.0.1
+main: me.BartVV.SK.Utils.SkyBlock
+author: NormaalBart // SkyPrison
+depend: [WorldEdit]
+commands:
+  skyblock:
+  
