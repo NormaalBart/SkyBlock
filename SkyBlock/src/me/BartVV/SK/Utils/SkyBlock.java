@@ -8,10 +8,11 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.BartVV.SK.Commands.SkyblockCMD;
+import me.BartVV.SK.Listeners.onJoin;
 
 public class SkyBlock extends JavaPlugin{
 
-	public static String prefix = "§7SkyBlock>> ";
+	public static String prefix = "§8(§9SkyMines§8)§7 ";
 	public static File schematica;
 	public static Plugin p;
 	public static Location loc = new Location(Bukkit.getWorld("world"), 0, 100, 0);
@@ -22,6 +23,7 @@ public class SkyBlock extends JavaPlugin{
 		File f = new File(getDataFolder() + "/Schematica");
 		f.mkdirs();
 		schematica = f;
+		Bukkit.getPluginManager().registerEvents(new onJoin(), this);
 		getCommand("SkyBlock").setExecutor(new SkyblockCMD());
 	}
 	

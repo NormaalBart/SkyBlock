@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -42,6 +42,11 @@ public class SkyBlockManager {
 		this.ownername = owner.getName();
 		this.owner = owner.getUniqueId();
 		this.maxplayers = maxplayers;
+		PlayerManager pm = PlayerManager.getPlayerManager(owner.getUniqueId());
+		if(pm == null){
+			pm = new PlayerManager(owner);
+		}
+		pm.setIsland(this);
 	}
 	
 	
@@ -51,13 +56,13 @@ public class SkyBlockManager {
 	public void createIsland(){
 		Player p = Bukkit.getPlayer(owner);
 		if (p == null) return;
-		
 		pasteSchematica(p, SkyBlock.loc);
-		this.loc = SkyBlock.loc;
-		p.sendMessage("Island created! Teleporting...");
-		p.teleport(this.loc);
-		SkyBlock.loc = SkyBlock.loc.add(0.0, 0.0, 100);
-		SkyBlocks.add(this);
+		Location loc = SkyBlock.loc;
+		this.loc = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), 180, 0);
+		Bukkit.broadcastMessage(ChatColor.RED + "" + this.loc);
+		SkyBlocks.add(this);	
+		SkyBlock.loc = SkyBlock.loc.add(0.0, 0.0, 1000);
+		Bukkit.broadcastMessage(ChatColor.GREEN + "" + this.loc);
 	}
 	
 	/*
@@ -75,12 +80,11 @@ public class SkyBlockManager {
 	
 	/*
 	 * Teleporting a player to the island
-	 * Can throw a NullPointerException when the SkyBlockManager is null, of the Spawn Location is null...
 	 */
 	public static void TeleportToIsland(Player p, SkyBlockManager sbm){
 		Location loc = sbm.getSpawnLocation();
 		if(loc == null){
-			throw new NullPointerException();
+			return;
 		}else{
 			p.teleport(loc);	
 		}
@@ -91,14 +95,28 @@ public class SkyBlockManager {
 	 */
 	public Location getSpawnLocation(){
 		if(loc == null){
-			throw new NullPointerException();
+			return null;
 		}else{
+			Location loc = new Location(this.loc.getWorld(), 
+					this.loc.getX() + 0.5, 
+					this.loc.getY() + 0.2, 
+					this.loc.getZ() + 0.5, 
+					this.loc.getYaw(), 
+					this.loc.getPitch());
 			return loc;	
 		}
 	}
+	
+	@Deprecated
+	public Location getRawLocation(){
+		return this.loc;
+	}
 	/*
+	 * @Param Player getting the rank of that specifiek Player
+	 * Deprecated because you can get it better from the player class.
 	 * Getting the rank of the player
 	 */
+	@Deprecated
 	public Rank getRank(Player p){
 		if (owner == p.getUniqueId()){
 			return Rank.OWNER;
@@ -147,42 +165,50 @@ public class SkyBlockManager {
 
 	
 	/*
+	 * @Param Player for getting the skyblock of that certain player
+	 * Deprecated because you can get it better from the PlayerManager.
+	 * 
 	 * Get the SkyBlock of the player
-	 * Throws NullPointerException when the skyblock of the players isn't found
-	 * Or when the player isn't in a skyblock
 	 */
+	@Deprecated
 	public static SkyBlockManager getSkyBlock(Player p){
 		for (SkyBlockManager sbm : getSkyBlocks()){
 			if (sbm.getPlayers().contains(p)){
 				return sbm;
 			}
 		}
-		throw new NullPointerException();
+		return null;
+	}
+	
+	public static SkyBlockManager getIsland(Player p){
+		SkyBlockManager sbm = null;
+		for(SkyBlockManager sb : SkyBlocks){
+			if(sb.getPlayers().contains(p)){
+				sbm = sb;
+			}
+		}
+		return sbm;
+	}
+	
+	public static SkyBlockManager getIsland(OfflinePlayer p){
+		SkyBlockManager sbm = null;
+		for(SkyBlockManager sb : SkyBlocks){
+			if(sb.getPlayers().contains(p)){
+				sbm = sb;
+			}
+		}
+		return sbm;
 	}
 	
 	private void pasteSchematica(Player p, Location focus){
 		File file;
 		Integer files = SkyBlock.schematica.listFiles().length;
-		Bukkit.broadcastMessage("Files: " + files);
 		Integer random = r.nextInt(files+1);
 		if (random == 0 || random > files+1){
 			random = 1;
 		}
 		file = new File(SkyBlock.schematica + "/SB" + random + ".schematic");
-		if (!file.exists() || file == null){
-			file = new File(SkyBlock.schematica + "/SB1.schematic");
-			if (!file.exists() || file == null){
-				Logger log = SkyBlock.p.getLogger();
-				p.sendMessage(SkyBlock.prefix + "§cFailed to create your island!");
-				log.info("===================");
-				log.info("   ");
-				log.info("Failed to creating the island of " + p.getName());
-				log.info("Disabling....");
-				log.info("   ");
-				log.info("===================");
-				Bukkit.getPluginManager().disablePlugin(SkyBlock.p);
-			}
-		}
+		
 		if (file.exists() && !file.isDirectory()) {
 		    /* Paste schematic */
 			SchematicFormat format = SchematicFormat.getFormat(file);
