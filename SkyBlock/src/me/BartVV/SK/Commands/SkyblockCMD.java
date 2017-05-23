@@ -7,8 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.BartVV.SK.SkyBlockManager.PlayerManager;
-import me.BartVV.SK.SkyBlockManager.SkyBlockManager;
+import me.BartVV.SK.Manager.PlayerManager;
+import me.BartVV.SK.Manager.SkyBlockManager;
 import me.BartVV.SK.Utils.SkyBlock;
 
 public class SkyblockCMD implements CommandExecutor{
@@ -29,6 +29,12 @@ public class SkyblockCMD implements CommandExecutor{
 				return true;
 			}
 			if(getArg(args[0], "create")){
+				if(SkyBlockManager.getIsland(p) != null){
+					PlayerManager pm = PlayerManager.getPlayerManager(p.getUniqueId());
+					p.sendMessage(SkyBlock.prefix + "You are already a " + pm.getRank().getString() + "!");
+					p.sendMessage(SkyBlock.prefix + "Please leave your island if you want to create a island!");
+					return true;
+				}
 				SkyBlockManager sbm = new SkyBlockManager(p, 10);
 				p.sendMessage(SkyBlock.prefix + "Creating your island...");
 				sbm.createIsland();
@@ -66,7 +72,9 @@ public class SkyblockCMD implements CommandExecutor{
 							.getIsland());	
 				}
 			}else if (getArg(args[0], "delete")){
-				p.sendMessage("Todo, Delete");
+				SkyBlockManager sbm = PlayerManager.getPlayerManager(p.getUniqueId()).getIsland();
+				sbm.deleteIsland();
+				p.sendMessage(SkyBlock.prefix + "Island deleted!");
 			}else if (getArg(args[0], "option", "options")){
 				p.sendMessage("Todo, Options");
 			}

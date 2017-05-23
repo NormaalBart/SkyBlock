@@ -5,4 +5,5 @@ author: NormaalBart // SkyPrison
 depend: [WorldEdit]
 commands:
   skyblock:
-  
+    aliases: [island, is, sb]
+    description: Main skyblock command.  

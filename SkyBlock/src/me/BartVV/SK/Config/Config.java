@@ -16,12 +16,20 @@ public class Config {
 	
 	public Config(SkyBlock skyblock, String filename){
 		this.skyblock = skyblock;
-		this.file = new File(skyblock.getDataFolder(), filename + ".yml");
+		if(filename.endsWith(".yml")){
+			this.file = new File(skyblock.getDataFolder(), filename);
+		}else{
+			this.file = new File(skyblock.getDataFolder(), filename + ".yml");	
+		}
 		reload();
 	}
 
 	public File getFile(){
 		return this.file;
+	}
+	
+	public FileConfiguration getFileConfiguration(){
+		return YamlConfiguration.loadConfiguration(file);
 	}
 	
 	public void reload() {
@@ -33,7 +41,7 @@ public class Config {
 			skyblock.saveResource(file.getName(), true);
 			skyblock.getLogger().info("Succesfully made " + file.getName() + "!");
 		}
-		fileconfiguration = YamlConfiguration.loadConfiguration(file);
+		this.fileconfiguration = YamlConfiguration.loadConfiguration(file);
 	}
 
 }
