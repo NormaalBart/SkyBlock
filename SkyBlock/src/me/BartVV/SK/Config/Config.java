@@ -1,7 +1,9 @@
 package me.BartVV.SK.Config;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -10,7 +12,6 @@ import me.BartVV.SK.Utils.SkyBlock;
 public class Config {
 	
 	private File file;
-	private FileConfiguration fileconfiguration;
 	private SkyBlock skyblock;
 	
 	
@@ -32,6 +33,22 @@ public class Config {
 		return YamlConfiguration.loadConfiguration(file);
 	}
 	
+	public static void saveConfig(String filename){
+		FileConfiguration config;
+		if(filename.endsWith(".yml")){
+			config = YamlConfiguration.loadConfiguration(new File(SkyBlock.p.getDataFolder(), filename));
+		}else{
+			filename = filename + ".yml";
+			config = YamlConfiguration.loadConfiguration(new File(SkyBlock.p.getDataFolder(), filename));
+		}
+		try {
+			config.save(new File(SkyBlock.p.getDataFolder(), filename));
+			Bukkit.broadcastMessage("Saved!");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void reload() {
 		if(!skyblock.getDataFolder().exists()){
 			skyblock.getDataFolder().mkdirs();
@@ -41,7 +58,20 @@ public class Config {
 			skyblock.saveResource(file.getName(), true);
 			skyblock.getLogger().info("Succesfully made " + file.getName() + "!");
 		}
-		this.fileconfiguration = YamlConfiguration.loadConfiguration(file);
+	}
+
+	public static void saveConfig(FileConfiguration config, String filename) {
+		if(filename.endsWith(".yml")){
+		}else{
+			filename = filename + ".yml";
+		}
+		
+		try {
+			config.save(new File(SkyBlock.p.getDataFolder(), filename));
+			Bukkit.broadcastMessage("Saved!");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -15,56 +15,52 @@ import me.BartVV.SK.Manager.PlayerManager;
 import me.BartVV.SK.Manager.SkyBlockManager;
 import me.BartVV.SK.Utils.SkyBlock;
 
-public class CreateGUI{
+public class DeleteGUI{
+
+	private static DeleteGUI DeleteGUI;
 	
-	private static CreateGUI CreateGUI;
-	
-	public static CreateGUI getInstance(){
-		return CreateGUI;
+	public static DeleteGUI getInstance(){
+		return DeleteGUI;
 	}
 	
-	public static void setInstance(CreateGUI cgui){
-		CreateGUI = cgui;
-		setup();
+	public static void setInstance(DeleteGUI dgui){
+		DeleteGUI = dgui;
 	}
 	
 	private Inventory inv;
 	
-	private static void setup(){
-		Inventory inv = Bukkit.createInventory(null, 9, "§7(§9Create GUI§7)");
+	public void setup(){
+		Inventory inv = Bukkit.createInventory(null, 9, "§7(§9Delete GUI§7)");
 		List<String> lore = new ArrayList<>();
-		lore.add("§7Clicking here will result of creating an island");
-		setItemStack(inv, Material.WOOL, 2, "§aCreate your island", 1, (byte)5, lore);
+		lore.add("§cNOTE:");
+		lore.add("§7If you click here,");
+		lore.add("§7Your island will be §cdeleted!");
+		lore.add("§7This §ccan not §7be rollbacked!");
+		setItemStack(inv, Material.WOOL, 2, "§cDelete your island", 1, (byte)14, lore);
 		lore.clear();
 		lore.add("§7Clicking here will result in closing this GUi!");
-		setItemStack(inv, Material.WOOL, 5, "§cDon't create my island", 1, (byte)14, lore);
-		CreateGUI.inv = inv;
+		setItemStack(inv, Material.WOOL, 5, "§aDon't delete my island", 1, (byte)5, lore);
+		this.inv = inv;
 	}
-	public void openCreate(Player p) {
+
+	public void openDelete(Player p) {
 		p.openInventory(inv);
 	}
-	
+
 	public void manageListener(InventoryClickEvent e) {
-		if(isClickedInventory("§7(§9Create GUI§7)", e.getClickedInventory())){
+		if(isClickedInventory("§7(§9Delete GUI§7)", e.getClickedInventory())){
 			if(e.getWhoClicked() instanceof Player){
 				Player p = (Player)e.getWhoClicked();
-				PlayerManager pm = PlayerManager.getPlayerManager(p.getUniqueId());
-				if(e.getSlot() == 2){
-					if(pm.getIsland() != null){
-						p.sendMessage(SkyBlock.prefix + "Please leave your island if you want to create a island!");
-						p.closeInventory();
-						return;
-					}
+				SkyBlockManager sbm = PlayerManager.getPlayerManager(p.getUniqueId()).getIsland();
+				if(sbm == null){
+					p.sendMessage(SkyBlock.prefix + "You don't have an island!");
 					p.closeInventory();
-					SkyBlockManager sbm = new SkyBlockManager(p, 10);
-					sbm.createIsland();
-					SkyBlockManager.TeleportToIsland(p, sbm);
-					return;
-				}else if (e.getSlot() == 5){
-					p.closeInventory();
-					p.sendMessage(SkyBlock.prefix + "Creating island cancelled!");
 					return;
 				}
+				p.closeInventory();
+				p.sendMessage(SkyBlock.prefix + "Deleting island...");
+				sbm.deleteIsland();
+				p.sendMessage(SkyBlock.prefix + "Island deleted!");	
 			}	
 		}
 	}
@@ -77,7 +73,7 @@ public class CreateGUI{
 		}
 	}
 	
-	private static void setItemStack(Inventory inv, Material mat, Integer slot, 
+	private void setItemStack(Inventory inv, Material mat, Integer slot, 
 			String displayname, Integer amount, Byte b, List<String> lore){
 		if(inv == null || mat == null || slot == null || amount == null) return;
 		ItemStack is;
@@ -96,5 +92,5 @@ public class CreateGUI{
 		is.setItemMeta(im);
 		inv.setItem(slot, is);
 	}
-	
+
 }

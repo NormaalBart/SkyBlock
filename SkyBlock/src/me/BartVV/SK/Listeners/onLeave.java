@@ -17,9 +17,6 @@ public class onLeave implements Listener{
 	@EventHandler
 	public void on(PlayerQuitEvent e){
 		Player p = e.getPlayer();
-		if(PlayerManager.getPlayerManager(p.getUniqueId()) != null){
-			
-		}
+		PlayerManager.getPlayerManager(p.getUniqueId()).save();
 	}
-
 }

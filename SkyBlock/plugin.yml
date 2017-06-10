@@ -1,9 +1,15 @@
 name: SkyBlock
-version: 0.0.1
+version: 0.1.9
 main: me.BartVV.SK.Utils.SkyBlock
 author: NormaalBart // SkyPrison
-depend: [WorldEdit]
+depend: [WorldEdit, WorldGuard]
 commands:
   skyblock:
     aliases: [island, is, sb]
     description: Main skyblock command.  
+  invite:
+    aliases: [inv, isinvite, isinv, islandinv, islandinv]
+    description: Inviting player's to their islands.
+  visit:
+    aliases: [isvisit]
+    description: Open the Visiting GUI.

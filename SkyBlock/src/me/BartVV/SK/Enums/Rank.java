@@ -3,9 +3,8 @@ package me.BartVV.SK.Enums;
 public enum Rank {
 	
 	OWNER("owner"), 
-	CO_OWNER("co-owner"),
 	MEMBER("member"),
-	NO_SKYBLOCK("no_skyblock")
+	NO_SKYBLOCK("no skyblock")
 	;
 	
 	
@@ -16,6 +15,18 @@ public enum Rank {
 	
 	public String getString(){
 		return str;
+	}
+	
+	public Rank getRank(String rank){
+		rank = rank.toLowerCase();
+		if(rank == OWNER.getString()){
+			return OWNER;
+		}
+		else if (rank == MEMBER.getString()){
+			return MEMBER;
+		}else{
+			return NO_SKYBLOCK;
+		}
 	}
 
 }
